@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.apogames.kitchenchef.ai</OriginalElement>
+  <nodes>
+    <node x="1258.0" y="547.0">com.apogames.kitchenchef.game.enums.KitchenSpice</node>
+    <node x="233.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.KitchenActionPointCooking</node>
+    <node x="666.0" y="622.0">com.apogames.kitchenchef.ai.Mission</node>
+    <node x="0.0" y="622.0">com.apogames.kitchenchef.game.MainPanel</node>
+    <node x="1138.0" y="237.0">com.apogames.kitchenchef.game.recipe.Recipe</node>
+    <node x="509.0" y="622.0">com.apogames.kitchenchef.ai.Cooking</node>
+    <node x="445.0" y="547.0">com.apogames.kitchenchef.game.ButtonProvider</node>
+    <node x="181.0" y="317.0">com.apogames.kitchenchef.game.recipe.Quiche</node>
+    <node x="1059.642857142857" y="472.0">com.apogames.kitchenchef.game.game.KitchenGame</node>
+    <node x="1264.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.ActionPointDishTaking</node>
+    <node x="1722.642857142857" y="392.0">com.apogames.kitchenchef.game.enums.KitchenActionPointEnum</node>
+    <node x="0.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.ActionPointCustomer</node>
+    <node x="1578.642857142857" y="472.0">com.apogames.kitchenchef.ai.player.Player</node>
+    <node x="980.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.ActionPointIngredientTaking</node>
+    <node x="691.6428571428571" y="472.0">com.apogames.kitchenchef.ai.ais.You</node>
+    <node x="2316.0" y="317.0">com.apogames.kitchenchef.game.recipe.CafeMokka</node>
+    <node x="238.00000000000003" y="472.0">com.apogames.kitchenchef.game.game.level.KitchenLevelOriginal</node>
+    <node x="1198.0" y="317.0">com.apogames.kitchenchef.game.recipe.StudentPasta</node>
+    <node x="1283.0" y="0.0">com.apogames.kitchenchef.game.interfaces.Render</node>
+    <node x="2201.0" y="547.0">com.apogames.kitchenchef.game.pathfinding.PathResult</node>
+    <node x="2005.6428571428569" y="392.0">com.apogames.kitchenchef.ai.KitchenInformation</node>
+    <node x="1423.642857142857" y="472.0">com.apogames.kitchenchef.game.entity.Overlay</node>
+    <node x="461.0" y="472.0">com.apogames.kitchenchef.game.game.level.KitchenLevelCafe</node>
+    <node x="657.0" y="547.0">com.apogames.kitchenchef.game.enums.CookingStatus</node>
+    <node x="1532.0" y="317.0">com.apogames.kitchenchef.game.recipe.ToastTasty</node>
+    <node x="792.6428571428571" y="472.0">com.apogames.kitchenchef.ai.ais.Amateur</node>
+    <node x="871.0000000000001" y="317.0">com.apogames.kitchenchef.game.recipe.CafeNormal</node>
+    <node x="284.5952380952381" y="80.0">com.apogames.kitchenchef.game.cooking.KitchenCooking</node>
+    <node x="1976.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.KitchenActionPointBuy</node>
+    <node x="818.0" y="622.0">com.apogames.kitchenchef.game.entity.Vector</node>
+    <node x="305.0000000000001" y="317.0">com.apogames.kitchenchef.game.recipe.BreadSnack</node>
+    <node x="875.75" y="392.0">com.apogames.kitchenchef.ai.Student</node>
+    <node x="172.0" y="622.0">com.apogames.kitchenchef.game.pathfinding.PathPoint</node>
+    <node x="1141.892857142857" y="392.0">com.apogames.kitchenchef.game.KitchenModel</node>
+    <node x="1230.5" y="80.0">com.apogames.kitchenchef.game.entity.StringEntity</node>
+    <node x="0.0" y="547.0">com.apogames.kitchenchef.game.enums.KitchenIngredient</node>
+    <node x="472.5952380952381" y="80.0">com.apogames.kitchenchef.game.entity.WaitHelper</node>
+    <node x="2245.642857142857" y="392.0">com.apogames.kitchenchef.game.KitchenProperties</node>
+    <node x="266.5" y="392.0">com.apogames.kitchenchef.game.game.level.KitchenLevel</node>
+    <node x="928.6428571428571" y="472.0">com.apogames.kitchenchef.ai.ais.Chef</node>
+    <node x="1013.5" y="80.0">com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint</node>
+    <node x="510.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.ActionPointDishWashing</node>
+    <node x="1504.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.ActionPointUpgrade</node>
+    <node x="966.0" y="622.0">com.apogames.kitchenchef.ai.action.Action</node>
+    <node x="1030.0" y="317.0">com.apogames.kitchenchef.game.recipe.ChickenSalad</node>
+    <node x="462.0000000000001" y="317.0">com.apogames.kitchenchef.game.recipe.Mika</node>
+    <node x="1830.0" y="547.0">com.apogames.kitchenchef.ai.actionPoints.ActionPoint</node>
+    <node x="1451.0" y="547.0">com.apogames.kitchenchef.game.enums.KitchenColor</node>
+    <node x="1866.0" y="317.0">com.apogames.kitchenchef.game.recipe.CafeGreen</node>
+    <node x="229.0" y="547.0">com.apogames.kitchenchef.game.enums.KitchenUpgrade</node>
+    <node x="731.0000000000001" y="317.0">com.apogames.kitchenchef.game.recipe.CafeChilli</node>
+    <node x="1545.0" y="622.0">com.apogames.kitchenchef.game.pathfinding.Ways</node>
+    <node x="861.0" y="547.0">com.apogames.kitchenchef.game.game.mission</node>
+    <node x="2159.0" y="317.0">com.apogames.kitchenchef.game.recipe.MurghPalak</node>
+    <node x="343.0" y="622.0">com.apogames.kitchenchef.game.enums.Direction</node>
+    <node x="1404.0" y="622.0">com.apogames.kitchenchef.game.enums.Order</node>
+    <node x="1644.0" y="547.0">com.apogames.kitchenchef.ai.AIConstants</node>
+    <node x="1258.0" y="622.0">com.apogames.kitchenchef.game.game.replay.Replay</node>
+    <node x="2015.0" y="317.0">com.apogames.kitchenchef.game.recipe.CafeLatte</node>
+    <node x="1684.0" y="317.0">com.apogames.kitchenchef.game.recipe.PastaCasserole</node>
+    <node x="1436.142857142857" y="392.0">com.apogames.kitchenchef.game.entity.Wall</node>
+    <node x="1229.642857142857" y="472.0">com.apogames.kitchenchef.game.menu.KitchenMenu</node>
+    <node x="1370.0" y="317.0">com.apogames.kitchenchef.game.recipe.SaladDeluxe</node>
+    <node x="0.0" y="472.0">com.apogames.kitchenchef.game.game.level.KitchenLevelChristmas</node>
+    <node x="1061.0" y="547.0">com.apogames.kitchenchef.game.game.KitchenBoard</node>
+    <node x="572.625" y="0.0">com.apogames.kitchenchef.game.interfaces.Think</node>
+    <node x="1576.642857142857" y="392.0">com.apogames.kitchenchef.ai.player.Enemy</node>
+    <node x="2016.0" y="547.0">com.apogames.kitchenchef.game.enums.KitchenDish</node>
+    <node x="685.0" y="392.0">com.apogames.kitchenchef.ai.KitchenPlayerAI</node>
+    <node x="764.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.ActionPointCutting</node>
+    <node x="568.0000000000001" y="317.0">com.apogames.kitchenchef.game.recipe.Gingerbread</node>
+    <node x="1112.0" y="622.0">com.apogames.kitchenchef.game.AIHelp</node>
+    <node x="1728.0" y="162.0">com.apogames.kitchenchef.game.actionPoint.ActionPointSpiceTaking</node>
+    <node x="627.5952380952381" y="80.0">com.apogames.kitchenchef.game.entity.KitchenPlayer</node>
+    <node x="0.0" y="317.0">com.apogames.kitchenchef.game.recipe.WinterWonder</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.apogames.kitchenchef.ai.ais.Chef" target="com.apogames.kitchenchef.ai.KitchenPlayerAI" relationship="GENERALIZATION">
+      <point x="-21.5" y="-15.0" />
+      <point x="950.1428571428571" y="452.0" />
+      <point x="769.0" y="452.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.ai.ais.Amateur" target="com.apogames.kitchenchef.ai.Student" relationship="ANNOTATION">
+      <point x="29.0" y="-15.0" />
+      <point x="879.6428571428571" y="442.0" />
+      <point x="931.75" y="442.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointSpiceTaking" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1842.0" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" target="com.apogames.kitchenchef.game.interfaces.Think" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1112.0" y="55.0" />
+      <point x="618.125" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.CafeLatte" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="2077.0" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointCustomer" target="com.apogames.kitchenchef.game.interfaces.Think" relationship="REALIZATION">
+      <point x="-53.25" y="-15.0" />
+      <point x="53.25" y="55.0" />
+      <point x="618.125" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.ToastTasty" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1598.0" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointCutting" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="862.0" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.SaladDeluxe" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1441.0" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.game.level.KitchenLevelChristmas" target="com.apogames.kitchenchef.game.game.level.KitchenLevel" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="109.0" y="447.0" />
+      <point x="339.5" y="447.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.CafeGreen" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1930.5" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.CafeNormal" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="940.5000000000001" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.MurghPalak" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="2227.5" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.entity.KitchenPlayer" target="com.apogames.kitchenchef.game.interfaces.Think" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="704.0952380952381" y="55.0" />
+      <point x="618.125" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointUpgrade" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1606.0" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.game.level.KitchenLevelCafe" target="com.apogames.kitchenchef.game.game.level.KitchenLevel" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="550.5" y="447.0" />
+      <point x="339.5" y="447.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.ai.ais.You" target="com.apogames.kitchenchef.ai.Student" relationship="ANNOTATION">
+      <point x="20.25" y="-15.0" />
+      <point x="752.3928571428571" y="442.0" />
+      <point x="931.75" y="442.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.CafeChilli" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="791.0000000000001" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.CafeMokka" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="2382.5" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.StudentPasta" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1274.0" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.cooking.KitchenCooking" target="com.apogames.kitchenchef.game.interfaces.Think" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="368.5952380952381" y="55.0" />
+      <point x="618.125" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.entity.WaitHelper" target="com.apogames.kitchenchef.game.interfaces.Think" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="540.0952380952381" y="55.0" />
+      <point x="618.125" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.ChickenSalad" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1104.0" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointCustomer" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="53.25" y="-15.0" />
+      <point x="159.75" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointDishTaking" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1374.0" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.ai.ais.Chef" target="com.apogames.kitchenchef.ai.Student" relationship="ANNOTATION">
+      <point x="21.5" y="-15.0" />
+      <point x="993.1428571428571" y="442.0" />
+      <point x="931.75" y="442.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.game.KitchenGame" target="com.apogames.kitchenchef.game.KitchenModel" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1134.642857142857" y="447.0" />
+      <point x="1219.392857142857" y="447.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.ai.ais.Amateur" target="com.apogames.kitchenchef.ai.KitchenPlayerAI" relationship="GENERALIZATION">
+      <point x="-29.0" y="-15.0" />
+      <point x="821.6428571428571" y="452.0" />
+      <point x="769.0" y="452.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.BreadSnack" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="373.5000000000001" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointIngredientTaking" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.Mika" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="505.0000000000001" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.Quiche" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="233.0" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.ai.player.Player" target="com.apogames.kitchenchef.ai.player.Enemy" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.entity.StringEntity" target="com.apogames.kitchenchef.game.interfaces.Think" relationship="REALIZATION">
+      <point x="-35.0" y="-15.0" />
+      <point x="1265.5" y="55.0" />
+      <point x="618.125" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.Gingerbread" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="639.5000000000001" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.entity.Overlay" target="com.apogames.kitchenchef.game.entity.Wall" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.ai.ais.You" target="com.apogames.kitchenchef.ai.KitchenPlayerAI" relationship="GENERALIZATION">
+      <point x="-20.25" y="-15.0" />
+      <point x="711.8928571428571" y="452.0" />
+      <point x="769.0" y="452.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.game.level.KitchenLevelOriginal" target="com.apogames.kitchenchef.game.game.level.KitchenLevel" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.PastaCasserole" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1765.0" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.KitchenActionPointCooking" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="361.5" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.entity.StringEntity" target="com.apogames.kitchenchef.game.interfaces.Render" relationship="REALIZATION">
+      <point x="35.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.recipe.WinterWonder" target="com.apogames.kitchenchef.game.recipe.Recipe" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="80.5" y="292.0" />
+      <point x="1189.0" y="292.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.menu.KitchenMenu" target="com.apogames.kitchenchef.game.KitchenModel" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="1304.142857142857" y="447.0" />
+      <point x="1219.392857142857" y="447.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.KitchenActionPointBuy" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="2088.0" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.apogames.kitchenchef.game.actionPoint.ActionPointDishWashing" target="com.apogames.kitchenchef.game.actionPoint.KitchenActionPoint" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="627.0" y="136.0" />
+      <point x="1112.0" y="136.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.5884973673552045" showDependencies="false" x="1224.5" y="326.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
