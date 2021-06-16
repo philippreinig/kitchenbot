@@ -7,13 +7,14 @@ import com.apogames.kitchenchef.ai.actionPoints.ActionPoint;
 import com.apogames.kitchenchef.ai.player.Player;
 import com.apogames.kitchenchef.game.entity.Vector;
 import com.apogames.kitchenchef.game.enums.CookingStatus;
+import com.apogames.kitchenchef.game.enums.KitchenActionPointEnum;
 import com.apogames.kitchenchef.game.pathfinding.PathResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Student(author = "Dirk Aporius", matrikelnummer = 815)
+@Student(author = "Philipp Reinig", matrikelnummer = 232934)
 public class MyBot extends KitchenPlayerAI {
     private static final Vector IDLE = Vector.ZERO;
     HashMap<String, ActionPoint> actionPoints;
@@ -22,12 +23,8 @@ public class MyBot extends KitchenPlayerAI {
     List<ActionPoint> cookingActionPoints;
     List<ActionPoint> ingredientTakingActionPoints;
     private KitchenInformation info;
-    private Cooking currentCooking;
     private boolean cookingOnStove = false;
-
-    private HashMap<Cooking, ActionPoint> customerOfCooking;
-
-    private Cooking cooking_debug;
+    private Cooking currentCooking;
 
     @Override
     public void init() {
@@ -37,7 +34,8 @@ public class MyBot extends KitchenPlayerAI {
         this.cookingActionPoints = new ArrayList<>();
         this.ingredientTakingActionPoints = new ArrayList<>();
         this.cookingOnStove = false;
-        this.customerOfCooking = new HashMap<>();
+        this.currentCooking = null;
+
     }
 
     @Override
@@ -47,66 +45,71 @@ public class MyBot extends KitchenPlayerAI {
 
     @Override
     public void update(final KitchenInformation information, final List<Player> players) {
+        this.actualUpdate(information, players);
+    }
+
+    private Cooking getCookingFromID(final long id) {
+        for (final Cooking cooking : this.info.getCookings()) if (cooking.getId() == id) return cooking;
+        throw new IllegalStateException("No cooking in cookings of KitchenInformation with id: " + id);
+    }
+
+    public synchronized void actualUpdate(final KitchenInformation information, final List<Player> players) {
         this.info = information;
         this.refactorActionPoints();
         System.out.println("update method called");
         final Player player = players.get(0);
-        System.out.println("initial currentCooking null: " + (this.currentCooking == null));
-        if (this.currentCooking == null && !this.cookingOnStove) {
-            System.out.println("getting new cooking from customer");
+        this.currentCooking = this.info.getCookings().size() > 0 ? this.info.getCookings().get(0) : null;
+        if (this.currentCooking == null) {
             final ActionPoint nextCustomer = this.getNextCustomer();
             this.moveToActionPointAndUse(player, nextCustomer);
-//            if (player.getCooking() == null)
-//                throw new IllegalStateException("player went to customer but doesnt have cooking afterwards");
-            final Cooking cooking = player.getCooking();
-
-            this.customerOfCooking.put(cooking, nextCustomer);
-            this.currentCooking = cooking;
-            this.cooking_debug = cooking;
+            this.currentCooking = player.getCooking();
         } else {
-            System.out.println("id of current cooking: " + this.currentCooking.getId());
-            if (player.getCooking() != null) this.currentCooking = player.getCooking();
-            if (player.getCooking() != this.currentCooking) System.err.println("COOKINGS NOT SYNCHRONIZED");
             final CookingStatus status = this.currentCooking.getStatus();
             System.out.println("status is: " + this.currentCooking.getStatus());
-            if (status == CookingStatus.NEEDED_DISH) {
-                this.printCurrentDishStatus();
+            if (status == CookingStatus.NEEDED_DISH)
                 this.moveToActionPointAndUse(player, this.actionPoints.get("DISH_TAKING"));
-            } else if (status == CookingStatus.DISH)
+            else if (status == CookingStatus.DISH)
                 this.moveToActionPointAndUse(player, this.ingredientTakingActionPoints.get(0));
             else if (status == CookingStatus.RAW) {
                 if (!MyBot.allCorrect(this.currentCooking.getIngredientsCorrect()))
                     this.moveToActionPointAndUse(player, this.ingredientTakingActionPoints.get(0));
                 else if (!MyBot.allCorrect(this.currentCooking.getSpiceCorrect()))
                     this.moveToActionPointAndUse(player, this.actionPoints.get("SPICE_TAKE"));
-            } else if (status == CookingStatus.READY_FOR_CUTTING)
+            } else if (status == CookingStatus.READY_FOR_CUTTING) {
                 this.moveToActionPointAndUse(player, this.cuttingActionPoints.get(0));
-            else if (status == CookingStatus.READY_FOR_COOKING) {
+                if (player.getCooking() != null) System.out.println("updated cooking after cutting");
+            } else if (status == CookingStatus.READY_FOR_COOKING) {
                 this.moveToActionPointAndUse(player, this.cookingActionPoints.get(0));
                 this.cookingOnStove = true;
             } else if (status == CookingStatus.COOKING) {
                 player.setAction(Action.idle());
                 assert (player.getAction().getMovement().equals(MyBot.IDLE));
             } else if (status == CookingStatus.SERVEABLE) {
-                this.cookingOnStove = false;
                 if (!this.cookingActionPoints.get(0).isPlayerIn(player))
                     this.moveToActionPointAndUse(player, this.cookingActionPoints.get(0));
-                if (player.getCooking() == null) player.setAction(Action.takeCookingUp());
-                this.moveToPositionAndUse(player, player.getCooking().getCustomerPosition());
-                this.currentCooking = null;
-                System.out.println("Served meal to customer");
+                else if (player.getCooking() == null) {
+                    assert (this.cookingActionPoints.get(0).isPlayerIn(player));
+                    player.setAction(Action.use());
+                    System.out.println("player took cooking");
+                    System.out.println(player.getCooking());
+                }
+                assert (player.getCooking() != null);
+                this.cookingOnStove = false;
+                System.out.println(player.getAction().getOrder().name());
+                if (player.getAction() != null && !player.getAction().equals(Action.idle())) ; // do nothing
+                else player.setAction(Action.takeCookingUp());
 
-  
+                if (player.getCooking() == null) System.err.println("Cooking is null!");
+                if (player.getCooking() != null) if (player.getCooking().getActionPoint() != null &&
+                        player.getCooking().getActionPoint().getContent() == KitchenActionPointEnum.CUSTOMER)
+                    player.setAction(Action.serve());
+                else
+                    this.moveToActionPointAndUse(player, this.getActionPointAt(player.getCooking().getCustomerPosition()));
             } else if (status == CookingStatus.ROTTEN)
                 this.moveToActionPointAndUse(player, this.actionPoints.get("DISH_WASHING"));
             else assert (false) : "Player not doing anything! (else condition fired)";
         }
-    }
 
-    private void printCurrentDishStatus() {
-        if (this.currentCooking != null)
-            System.out.println("for current cooking need following dish: " + this.currentCooking.getDish());
-        else System.out.println("current cooking null -> no dish");
     }
 
     private void refactorActionPoints() {
@@ -119,7 +122,6 @@ public class MyBot extends KitchenPlayerAI {
 
         for (final ActionPoint actionpoint : this.info.getActionPoints()) {
             final String name = actionpoint.getContent().name();
-            System.out.println("id: " + actionpoint.getId() + ", name: " + name);
             switch (name) {
                 case "DISH_TAKING":
                 case "DISH_WASHING":
@@ -158,8 +160,6 @@ public class MyBot extends KitchenPlayerAI {
             COOKING
          */
 
-        System.out.println(this.info == null);
-        for (final ActionPoint kap : this.info.getActionPoints()) System.out.println(kap.getContent().name());
     }
 
     private void moveToActionPointAndUse(final Player player, final ActionPoint actionpoint) {
@@ -169,21 +169,12 @@ public class MyBot extends KitchenPlayerAI {
             final PathResult wayFromTo = this.info.getWays().findWayFromTo(this.info, player, actionpoint.getPosition());
             player.setAction(Action.move(wayFromTo.getMovement()));
         }
+        System.out.println("at end of moveToActionPointAndUse-method action of player is: " + player.getAction().getOrder().name());
     }
 
-    private void moveToPositionAndUse(final Player player, final Vector vector) {
-        System.out.println("player currently at: " + player.getPosition() + ", needs to go to: " + vector);
-        if (this.playerInsideActionPointAtVector(player, vector) != null)
-            this.moveToActionPointAndUse(player, this.playerInsideActionPointAtVector(player, vector));
-        else
-            System.err.println("player not yet at right position");
-        player.setAction(Action.move(this.info.getWays().findWayFromTo(this.info, player, vector).getMovement()));
-    }
-
-    private ActionPoint playerInsideActionPointAtVector(final Player player, final Vector vector) {
-        if (player.getPosition().distance(vector) < this.info.getActionPoints().get(0).getRadius())
-            for (final ActionPoint ap : this.info.getActionPoints())
-                if (ap.isPlayerIn(player)) return ap;
+    private ActionPoint getActionPointAt(final Vector vector) {
+        for (final ActionPoint ap : this.info.getActionPoints())
+            if (ap.isInVector(vector)) return ap;
         return null;
     }
 
@@ -194,11 +185,9 @@ public class MyBot extends KitchenPlayerAI {
 
     private ActionPoint getNextCustomer() {
         ActionPoint nextCustomer = null;
-        for (final ActionPoint customer : this.customers) {
-            System.out.println(customer.getWaitingTime());
+        for (final ActionPoint customer : this.customers)
             if (nextCustomer == null || customer.getWaitingTime() != -1 && customer.getWaitingTime() < nextCustomer.getWaitingTime())
                 nextCustomer = customer;
-        }
         return nextCustomer;
     }
 }
