@@ -15,9 +15,9 @@
         <option value="unqualifiedMethodAccess" />
         <option value="unqualifiedStaticMemberAccess" />
         <option value="missingOverrideAnnotation" />
+        <option value="useBlocks" />
         <option value="explicitTypeCanBeDiamond" />
         <option value="unnecessarySemicolon" />
-        <option value="singleStatementInBlock" />
       </set>
     </option>
     <option name="configurationPath" value="" />
