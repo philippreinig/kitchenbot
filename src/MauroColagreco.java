@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Student(author = "Philipp Reinig", matrikelnummer = 232934)
-public class MyBot extends KitchenPlayerAI {
+public class MauroColagreco extends KitchenPlayerAI {
     public static final String COOKING = "COOKING";
     public static final String CUTTING = "CUTTING";
     public static final String INGREDIENT_TAKE = "INGREDIENT_TAKE";
@@ -26,7 +26,7 @@ public class MyBot extends KitchenPlayerAI {
     public static final String DISH_WASHING = "DISH_WASHING";
     public static final String DISH_TAKING = "DISH_TAKING";
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     HashMap<String, ActionPoint> actionPoints;
     List<ActionPoint> customers;
@@ -57,7 +57,7 @@ public class MyBot extends KitchenPlayerAI {
 
     @Override
     public String getName() {
-        return "OwnBot";
+        return "Mauro Colagreco";
     }
 
     @Override
@@ -69,9 +69,18 @@ public class MyBot extends KitchenPlayerAI {
                 this.lastVisitedIngredientTakingActionPoints.add(new LinkedList.Node(null, null));
             }
             this.init = false;
-
-            for (final ActionPoint ap : information.getActionPoints()) {
-                System.out.println(ap.getPosition() + ", " + ap.getContent().name());
+            if (MauroColagreco.DEBUG) {
+                for (final ActionPoint ap : information.getActionPoints()) {
+                    System.out.println(ap.getPosition() + ", " + ap.getContent().name() + ", " + ap.getId());
+                    if (ap.getContent() == KitchenActionPointEnum.UPGRADE) {
+                        final List<KitchenUpgrade> upgrades = ap.getPossibleUpgrades();
+                        System.out.println("possible upgrades: " + Arrays.toString(ap.getPossibleUpgrades().toArray()));
+                        for (final KitchenUpgrade upgrade : upgrades) {
+                            System.out.println(upgrade.getValueString() + ": " + upgrade.getCost());
+                        }
+                    }
+                }
+                System.out.println("==================================================================");
             }
         }
         this.info = information;
@@ -80,16 +89,9 @@ public class MyBot extends KitchenPlayerAI {
         for (int i = 0; i < players.size(); i++) {
             this.updatePlayer(players.get(i), i);
         }
-//        for (final ActionPoint customer : this.customers) {
-//            System.out.println("Customer with id: " + customer.getId() + " is at " + customer.getPosition());
-//            System.out.println(customer.getContent().name());
-//        }
     }
 
     public void updatePlayer(final Player player, final int i) {
-        if (MyBot.DEBUG) {
-            System.out.println("updating player: " + i);
-        }
         if (player.getCooking() != null && this.currentCookings.get(i) != null && this.currentCookings.get(i).getCooking() != null && player.getCooking() != this.currentCookings.get(i).getCooking()) {
             this.currentCookings.get(i).setCooking(player.getCooking());
         }
@@ -120,126 +122,118 @@ public class MyBot extends KitchenPlayerAI {
         }
         //everything ready to run workflow update
         else {
-            final Cooking playersCurrentCooking = this.currentCookings.get(i).getCooking();
+            final Cooking playersCurrentCooking = this.info.getSameCooking(this.currentCookings.get(i).getCooking());
             assert (playersCurrentCooking != null);
             assert (player.getCooking() == this.currentCookings.get(i).getCooking() || (player.getCooking() == null && this.currentCookings.get(i) != null && this.currentCookings.get(i).getOnStove()));
-            if (MyBot.DEBUG) {
-                System.out.println("cooking of player " + i + " is currently on stove: " + this.currentCookings.get(i).getOnStove());
-            }
             final CookingStatus status = playersCurrentCooking.getStatus();
 //            System.out.println("status player " + i + " is: " + playersCurrentCooking.getStatus());
 
             if (status == CookingStatus.NEEDED_DISH) {
                 assert (player.getCooking() != null);
-//                if (MyBot.DEBUG) {
-//                    System.out.println("currently clean dishes are: " + Arrays.toString(this.actionPoints.get(MyBot.DISH_TAKING).getDishes().toArray()));
-//                }
-//                if (MyBot.DEBUG) {
-//                    System.out.println("player needs following dish: " + playersCurrentCooking.getRecipe().getDish());
-//                }
                 if (this.dishClean(playersCurrentCooking.getRecipe().getDish())) {
-                    this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.DISH_TAKING), i);
+                    this.moveToActionPointAndUse(player, this.actionPoints.get(MauroColagreco.DISH_TAKING), i);
                 } else {
-                    this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.DISH_WASHING), i);
+                    this.moveToActionPointAndUse(player, this.actionPoints.get(MauroColagreco.DISH_WASHING), i);
                 }
             } else if (status == CookingStatus.DISH || status == CookingStatus.RAW) {
                 // ================================================================================================================
                 boolean needToBuy = false;
-//                System.out.println("status is DISH or RAW");
-                if (MyBot.hasIncorrect(playersCurrentCooking.getIngredientsCorrect())) {
-                    System.out.println("still have missing ingredients");
-//                    System.out.println("cooking has incorrect ingredients");
+                if (MauroColagreco.hasIncorrect(playersCurrentCooking.getIngredientsCorrect())) {
                     if (this.lastVisitedIngredientTakingActionPoints.get(i) == null) {
-                        System.out.println("last visited ingredient taking action point is null -> invalid");
-                        if (MyBot.ingredientTakingActionPointContainsAtLeastOneMissingIngredient((ActionPoint) this.ingredientTakingActionPoints.getFirst().getData(), playersCurrentCooking)) {
+                        if (this.ingredientTakingActionPointContainsAtLeastOneMissingIngredient((ActionPoint) this.ingredientTakingActionPoints.getFirst().getData(), playersCurrentCooking)) {
                             this.lastVisitedIngredientTakingActionPoints.set(i, this.ingredientTakingActionPoints.getFirst());
-                            System.out.println("first ingredient taking action point contains at least one missing ingredient -> dont need to buy");
                         } else {
-                            System.out.println("set needToBuy status to true");
                             needToBuy = true;
                         }
                     } else if (this.lastVisitedIngredientTakingActionPoints.get(i) != null && this.lastVisitedIngredientTakingActionPoints.get(i).getData() == null) {
-                        System.out.println("last visited ingredient taking action point isnt null, but data -> setting last visited ingredient taking action point to the first one (own creation of invalid, shouldnt occur after inital game start)");
+//                        System.out.println("last visited ingredient taking action point isnt null, but data -> setting last visited ingredient taking action point to the first one (own creation of invalid, shouldnt occur after inital game start)");
                         assert (this.ingredientTakingActionPoints.getFirst().getData() instanceof ActionPoint);
                         this.lastVisitedIngredientTakingActionPoints.set(i, this.ingredientTakingActionPoints.getFirst());
-                        if (MyBot.ingredientTakingActionPointContainsAtLeastOneMissingIngredient((ActionPoint) this.lastVisitedIngredientTakingActionPoints.get(i).getData(), playersCurrentCooking)) {
-                            System.out.println("[else if branch] got valid ingredient taking action point in last visited ingredient taking action points list, which also contains at least one missing ingredient -> moving there now");
+                        if (this.ingredientTakingActionPointContainsAtLeastOneMissingIngredient((ActionPoint) this.lastVisitedIngredientTakingActionPoints.get(i).getData(), playersCurrentCooking)) {
+//                            System.out.println("[else if branch] got valid ingredient taking action point in last visited ingredient taking action points list, which also contains at least one missing ingredient -> moving there now");
                             this.moveToActionPointAndUse(player, (ActionPoint) this.lastVisitedIngredientTakingActionPoints.get(i).getData(), i);
                         } else {
-                            System.out.println("[else if branch] got valid ingredient taking action point, but it doesnt contain any needed ingredients -> setting last visited ingredient taking action point to the next one");
+//                            System.out.println("[else if branch] got valid ingredient taking action point, but it doesnt contain any needed ingredients -> setting last visited ingredient taking action point to the next one");
                             this.lastVisitedIngredientTakingActionPoints.set(i, this.lastVisitedIngredientTakingActionPoints.get(i).getNext());
                         }
                     } else {
                         assert (this.lastVisitedIngredientTakingActionPoints.get(i).getData() instanceof ActionPoint);
-                        if (MyBot.ingredientTakingActionPointContainsAtLeastOneMissingIngredient((ActionPoint) this.lastVisitedIngredientTakingActionPoints.get(i).getData(), playersCurrentCooking)) {
-                            System.out.println("[else branch] got valid ingredient taking action point in last visited ingredient taking action points list, which also contains at least one missing ingredient -> moving there now");
+                        if (this.ingredientTakingActionPointContainsAtLeastOneMissingIngredient((ActionPoint) this.lastVisitedIngredientTakingActionPoints.get(i).getData(), playersCurrentCooking)) {
+//                            System.out.println("[else branch] got valid ingredient taking action point in last visited ingredient taking action points list, which also contains at least one missing ingredient -> moving there now");
                             this.moveToActionPointAndUse(player, (ActionPoint) this.lastVisitedIngredientTakingActionPoints.get(i).getData(), i);
                         } else {
-                            System.out.println("[else branch] got valid ingredient taking action point, but it doesnt contain any needed ingredients -> setting last visited ingredient taking action point to the next one");
+//                            System.out.println("[else branch] got valid ingredient taking action point, but it doesnt contain any needed ingredients -> setting last visited ingredient taking action point to the next one");
 
                             this.lastVisitedIngredientTakingActionPoints.set(i, this.lastVisitedIngredientTakingActionPoints.get(i).getNext());
                         }
                     }
                 }
-                if (MyBot.hasIncorrect(playersCurrentCooking.getSpiceCorrect()) && this.spiceTakingActionPointContainsAtLeastOneMissingSpice(playersCurrentCooking)) {
-                    System.out.println("still need spices and spices still available -> getting it now");
-//                    System.out.println("not all spices are correct yet -> moving to ");
-                    this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.SPICE_TAKE), i);
-                } else if (MyBot.hasIncorrect(playersCurrentCooking.getSpiceCorrect()) && !this.spiceTakingActionPointContainsAtLeastOneMissingSpice(playersCurrentCooking)) {
-                    System.out.println("still need spices, but none of the necessary available -> needToBuy = true");
+                if (MauroColagreco.hasIncorrect(playersCurrentCooking.getSpiceCorrect()) && this.spiceTakingActionPointContainsAtLeastOneMissingSpice(playersCurrentCooking)) {
+                    this.moveToActionPointAndUse(player, this.actionPoints.get(MauroColagreco.SPICE_TAKE), i);
+                } else if (MauroColagreco.hasIncorrect(playersCurrentCooking.getSpiceCorrect()) && !this.spiceTakingActionPointContainsAtLeastOneMissingSpice(playersCurrentCooking)) {
                     needToBuy = true;
                 } else {
-                    assert (!MyBot.hasIncorrect(playersCurrentCooking.getSpiceCorrect()));
+                    assert (!MauroColagreco.hasIncorrect(playersCurrentCooking.getSpiceCorrect()));
                 }
-                if (needToBuy) {
-                    System.out.println("player needs to buy, sending him to buy now");
-                    this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.BUY), i);
+                if (needToBuy && !this.otherPlayerOnWayToActionPointOrAlreadyThere(this.actionPoints.get(MauroColagreco.BUY), i)) {
+//                    System.out.println("player needs to buy, sending him to buy now");
+                    this.moveToActionPointAndUse(player, this.actionPoints.get(MauroColagreco.BUY), i);
                 }
                 // ================================================================================================================
             } else if (status == CookingStatus.READY_FOR_CUTTING) {
                 this.moveToActionPointAndUse(player, this.cuttingActionPoints.get(0), i);
+            } else if (status == CookingStatus.READY_FOR_COOKING) {
+                System.out.println("player " + i + " , status is READY_FOR_COOKING");
                 if (player.getCooking() != null) {
-                    if (MyBot.DEBUG) {
-                        System.out.println("updated cooking after cutting");
+                    this.currentCookings.set(i, new PlayersCooking(player.getCooking(), false));
+                    this.moveToActionPointAndUse(player, this.cookingActionPoints.get(0), i);
+                } else {
+                    if (this.getCookingActionPointWithCooking(player, this.currentCookings.get(i).getCooking(), i) != null) {
+                        this.moveToActionPointAndUse(player, this.getCookingActionPointWithCooking(player, this.currentCookings.get(i).getCooking(), i), i);
                     }
                 }
-            } else if (status == CookingStatus.READY_FOR_COOKING) {
-                this.moveToActionPointAndUse(player, this.cookingActionPoints.get(0), i);
                 this.currentCookings.get(i).setOnStove(true);
             } else if (status == CookingStatus.COOKING) {
+                System.out.println("player " + i + ", status is COOKING");
                 this.currentCookings.get(i).setOnStove(true);
                 player.setAction(Action.idle());
             } else if (status == CookingStatus.SERVEABLE && player.getCooking() == null) {
-                if (MyBot.DEBUG) {
+                System.out.println("general part executed");
+                if (MauroColagreco.DEBUG) {
                     System.err.println("Cooking is currently on stove, but ready to be picked up by player " + i);
                 }
                 assert (this.currentCookings.get(i).getOnStove()) : "cooking has to be onStove at this point, but isn't";
-                if (!this.cookingActionPoints.get(0).isPlayerIn(player)) {
-                    this.moveToActionPointAndUse(player, this.cookingActionPoints.get(0), i);
+                if (this.getCookingActionPointWithCooking(player, playersCurrentCooking, i) != null && !this.getCookingActionPointWithCooking(player, playersCurrentCooking, i).isPlayerIn(player)) {
+                    System.out.println("player not at correct cooking ap, moving him there now: " + this.getCookingActionPointWithCooking(player, playersCurrentCooking, i).getPosition());
+                    this.moveToActionPointAndUse(player, this.getCookingActionPointWithCooking(player, playersCurrentCooking, i), i);
                 } else {
+                    System.out.println("player at current cooking ap, getting cooking from stove now");
                     player.setAction(Action.use());
                 }
                 if (player.getCooking() != null) {
                     this.currentCookings.get(i).setOnStove(false);
                 }
-                if (MyBot.DEBUG) {
-                    System.out.println(player.getCooking());
-                }
             } else if (status == CookingStatus.SERVEABLE && player.getCooking() != null) {
-                if (MyBot.DEBUG) {
-                    System.err.println("Cooking was picked up by player " + i);
-                }
                 final Vector customersPosition = player.getCooking().getCustomerPosition();
-//                System.out.println("position of customer is: " + customersPosition);
-//                System.out.println("customer actually at this position: " + (this.getCustomerAtVector(customersPosition) != null && this.getCustomerAtVector(customersPosition).getContent() == KitchenActionPointEnum.CUSTOMER));
                 this.moveToActionPointAndUse(player, this.getCustomerAtVector(customersPosition), i);
                 this.currentCookings.get(i).setOnStove(false);
             } else if (status == CookingStatus.ROTTEN) {
-                this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.DISH_WASHING), i);
+                this.moveToActionPointAndUse(player, this.actionPoints.get(MauroColagreco.DISH_WASHING), i);
             } else {
                 assert (false) : "Player " + i + " not doing anything! (else condition fired)";
             }
         }
+    }
+
+    private ActionPoint getCookingActionPointWithCooking(final Player player, final Cooking cooking, final int i) {
+        System.out.println("getCookingActionPointWithCooking() was called for player " + i);
+        for (final ActionPoint ap : this.cookingActionPoints) {
+            if (ap.getCooking() == cooking) {
+                System.out.println("cooking of player " + i + " is at: " + ap.getPosition() + ", " + ap.getId() + ", players position: " + player.getPosition());
+                return ap;
+            }
+        }
+        return null;
     }
 
     private static List<KitchenIngredient> getMissingIngredients(final Cooking cooking) {
@@ -251,34 +245,32 @@ public class MyBot extends KitchenPlayerAI {
         return ingredients;
     }
 
-    private static boolean ingredientTakingActionPointContainsAtLeastOneMissingIngredient(final ActionPoint ingredientTakingActionPoint, final Cooking cooking) {
-        final List<KitchenIngredient> availableIngredients = ingredientTakingActionPoint.getIngredients();
-        final List<KitchenIngredient> neededIngredients = MyBot.getMissingIngredients(cooking);
-        System.out.println("iTAPCALOMI: availableIngredients at action point: " + Arrays.toString(availableIngredients.toArray()));
-        System.out.println("iTAPCALOMI: neededIngredients by cooking: " + Arrays.toString(neededIngredients.toArray()));
+    private boolean ingredientTakingActionPointContainsAtLeastOneMissingIngredient(final ActionPoint ingredientTakingActionPoint, final Cooking cooking) {
+        final List<KitchenIngredient> availableIngredients = this.info.getSameActionPoint(ingredientTakingActionPoint).getIngredients();
+        final List<KitchenIngredient> neededIngredients = MauroColagreco.getMissingIngredients(cooking);
 
         for (final KitchenIngredient ingredient : neededIngredients) {
             if (availableIngredients.contains(ingredient)) {
-                System.out.println("iTAPCALOMI: " + ingredient.name() + " causes to return true");
                 return true;
             }
         }
         return false;
     }
 
-    private static List<KitchenSpice> getMissingSpices(final Cooking cooking) {
+    private List<KitchenSpice> getMissingSpices(Cooking cooking) {
+        cooking = this.info.getSameCooking(cooking);
 //        System.out.println("getMissingSpices: cooking needs following spices: " + Arrays.toString(cooking.getRecipe().getNeededSpice().toArray()) + ", has already: " + Arrays.toString(cooking.getSpice().toArray()));
-        final List<KitchenSpice> spices = cooking.getRecipe().getNeededSpice();
+        final List<KitchenSpice> neededSpices = cooking.getRecipe().getNeededSpice();
         for (final KitchenSpice spice : cooking.getSpice()) {
-            assert (spices.contains(spice)) : "cooking contains more spices than needed from recipe - failing for " + spice.name();
-            spices.remove(spice);
+//            assert (spices.contains(spice)) : "cooking contains more spices than needed from recipe - failing for " + spice.name();
+            neededSpices.remove(spice);
         }
-        return spices;
+        return neededSpices;
     }
 
     private boolean spiceTakingActionPointContainsAtLeastOneMissingSpice(final Cooking cooking) {
-        final List<KitchenSpice> availableSpices = this.actionPoints.get(MyBot.SPICE_TAKE).getSpices();
-        final List<KitchenSpice> neededSpices = MyBot.getMissingSpices(cooking);
+        final List<KitchenSpice> availableSpices = this.actionPoints.get(MauroColagreco.SPICE_TAKE).getSpices();
+        final List<KitchenSpice> neededSpices = this.getMissingSpices(cooking);
         for (final KitchenSpice spice : neededSpices) {
             if (availableSpices.contains(spice)) {
                 return true;
@@ -297,23 +289,23 @@ public class MyBot extends KitchenPlayerAI {
         for (final ActionPoint actionpoint : this.info.getActionPoints()) {
             final String name = actionpoint.getContent().name();
             switch (name) {
-                case MyBot.DISH_TAKING:
-                case MyBot.DISH_WASHING:
-                case MyBot.SPICE_TAKE:
-                case MyBot.BUY:
-                case MyBot.UPGRADE:
+                case MauroColagreco.DISH_TAKING:
+                case MauroColagreco.DISH_WASHING:
+                case MauroColagreco.SPICE_TAKE:
+                case MauroColagreco.BUY:
+                case MauroColagreco.UPGRADE:
                     this.actionPoints.put(name, actionpoint);
                     break;
-                case MyBot.CUSTOMER:
+                case MauroColagreco.CUSTOMER:
                     this.customers.add(actionpoint);
                     break;
-                case MyBot.INGREDIENT_TAKE:
-                    this.ingredientTakingActionPoints.insert(actionpoint);
+                case MauroColagreco.INGREDIENT_TAKE:
+                    this.ingredientTakingActionPoints.pushback(actionpoint);
                     break;
-                case MyBot.CUTTING:
+                case MauroColagreco.CUTTING:
                     this.cuttingActionPoints.add(actionpoint);
                     break;
-                case MyBot.COOKING:
+                case MauroColagreco.COOKING:
                     this.cookingActionPoints.add(actionpoint);
                     break;
                 default:
@@ -344,18 +336,28 @@ public class MyBot extends KitchenPlayerAI {
 //            System.out.println("moveToActionPointAndUse: player already at action point -> using it now");
             player.setAction(Action.use());
         } else {
-            if (this.otherPlayerOnWayToActionPointOrAlreadyThere(actionpoint, i)) {
+            if (this.otherPlayerOnWayToActionPointOrAlreadyThere(actionpoint, i) && this.multipleActionPointsOfTypeExist(actionpoint.getContent()) && this.getNextFreeActionPointOfSameType(actionpoint) != null && !(player.getCooking() == null && this.currentCookings.get(i) != null && this.currentCookings.get(i).getOnStove())) {
+                this.moveToActionPointAndUse(player, this.getNextFreeActionPointOfSameType(actionpoint), i);
 //                System.out.println("setting player to idle, since other player already on the way to the action point");
-                player.setAction(Action.idle());
-            }
-            final PathResult wayFromTo = this.info.getWays().findWayFromTo(this.info, player, actionpoint.getPosition());
-            if (MyBot.DEBUG) {
+            } else {
+                final PathResult wayFromTo = this.info.getWays().findWayFromTo(this.info, player, actionpoint.getPosition());
+                if (MauroColagreco.DEBUG) {
 //                System.out.println("Action of player " + i + " is: " + player.getAction().getOrder().name());
+                }
+                player.setAction(Action.move(wayFromTo.getMovement()));
+                this.goalActionPoints.set(i, actionpoint);
             }
-            player.setAction(Action.move(wayFromTo.getMovement()));
-            this.goalActionPoints.set(i, actionpoint);
         }
 //        System.out.println("action of player at the end of moveToActionPointAndUse-method: " + player.getAction().getOrder().name());
+    }
+
+    private ActionPoint getNextFreeActionPointOfSameType(final ActionPoint actionpoint) {
+        for (final ActionPoint ap : this.info.getActionPoints()) {
+            if (actionpoint.getContent() == ap.getContent() && ap.getId() > actionpoint.getId()) {
+                return ap;
+            }
+        }
+        return null;
     }
 
     private ActionPoint getCustomerAtVector(final Vector vector) {
@@ -374,21 +376,16 @@ public class MyBot extends KitchenPlayerAI {
         return null;
     }
 
-  /*
-  private ActionPoint getActionPointAtOwn(final Vector vector) {
-        System.out.println("getActionPointOwn at: " + vector);
+    private boolean multipleActionPointsOfTypeExist(final KitchenActionPointEnum type) {
+        int counter = 0;
         for (final ActionPoint ap : this.info.getActionPoints()) {
-            final double distanceVectorToActionPoint = Math.sqrt(Math.pow(vector.x - ap.getPosition().x, 2) + Math.pow(vector.y - ap.getPosition().y, 2));
-            System.out.println("getActionPointAtOwn: distance from vector " + vector + " to actionpoint " + ap.getContent().name() + " at " + ap.getPosition() + (ap.getContent() == KitchenActionPointEnum.CUSTOMER ? ("|" + ap.getCustomerPosition()) : "") + " with radius " + ap.getRadius() + " is: " + distanceVectorToActionPoint);
-            if (distanceVectorToActionPoint <= ap.getRadius()) {
-                System.out.println("actionpoint at " + vector + " is " + ap.getContent().name() + " at: " + ap.getPosition());
-                return ap;
+            if (ap.getContent() == type) {
+                ++counter;
             }
         }
-        assert (false) : "getActionPointAt: no actionpoint at the given vector!";
-       return null;
+        assert (counter >= 1);
+        return counter > 1;
     }
-   */
 
     private static boolean hasIncorrect(final List<Boolean> list) {
         for (final Boolean b : list) {
@@ -400,7 +397,7 @@ public class MyBot extends KitchenPlayerAI {
     }
 
     private boolean dishClean(final KitchenDish kitchenDishNeeded) {
-        for (final KitchenDish cleanKitchenDish : this.actionPoints.get(MyBot.DISH_TAKING).getDishes()) {
+        for (final KitchenDish cleanKitchenDish : this.actionPoints.get(MauroColagreco.DISH_TAKING).getDishes()) {
             if (kitchenDishNeeded == cleanKitchenDish) {
                 return true;
             }
@@ -408,72 +405,49 @@ public class MyBot extends KitchenPlayerAI {
         return false;
     }
 
-//    private static HashMap<KitchenIngredient, Integer> listOfIngredientsToHashMap(final List<KitchenIngredient> list) {
-//        final HashMap<KitchenIngredient, Integer> ingredientsHashMap = new HashMap<>();
-//        for (final KitchenIngredient element : list) {
-//            if (ingredientsHashMap.containsKey(element)) {
-//                ingredientsHashMap.put(element, ingredientsHashMap.get(element) + 1);
-//            } else {
-//                ingredientsHashMap.put(element, 0);
-//            }
-//        }
-//        return ingredientsHashMap;
-//    }
-//
-//    private static HashMap<KitchenSpice, Integer> listOfSpicesToHashMap(final List<KitchenSpice> list) {
-//        final HashMap<KitchenSpice, Integer> spicesHashMap = new HashMap<>();
-//        for (final KitchenSpice element : list) {
-//            if (spicesHashMap.containsKey(element)) {
-//                spicesHashMap.put(element, spicesHashMap.get(element) + 1);
-//            } else {
-//                spicesHashMap.put(element, 0);
-//            }
-//        }
-//        return spicesHashMap;
-//    }
-
-    /*private boolean allIngredientsAndSpicesAvailable(final Cooking cooking) {
-        assert (cooking != null) : "allIngredientsAndSpicesAvailable method got cooking which is null";
-        final HashMap<KitchenIngredient, Integer> neededIngredients = MyBot.listOfIngredientsToHashMap(cooking.getRecipe().getNeededIngredients());
-        final HashMap<KitchenSpice, Integer> neededSpices = MyBot.listOfSpicesToHashMap(cooking.getRecipe().getNeededSpice());
-        final HashMap<KitchenIngredient, Integer> availableIngredients = MyBot.listOfIngredientsToHashMap(this.ingredientTakingActionPoints.get(0).getIngredients());
-        final HashMap<KitchenSpice, Integer> availableSpices = MyBot.listOfSpicesToHashMap(this.actionPoints.get(MyBot.SPICE_TAKE).getSpices());
-
-        for (final KitchenIngredient element : neededIngredients.keySet()) {
-            if (availableIngredients.get(element) == null || neededIngredients.get(element) > availableIngredients.get(element)) {
-                return false;
-            }
-        }
-
-        for (final KitchenSpice element : neededSpices.keySet()) {
-            if (availableSpices.get(element) == null || neededSpices.get(element) > availableSpices.get(element)) {
-                return false;
-            }
-        }
-        return true;
-    }*/
-
-    private boolean otherPlayerOnWayToActionPointOrAlreadyThere(final ActionPoint actionPoint, final int x) {
+    private boolean otherPlayerCurrentlyAtActionPoint(final ActionPoint actionPoint, final int x) {
         for (int i = 0; i < this.players.size(); i++) {
             if (i == x) {
                 continue;
             }
-            if (actionPoint.equals(this.goalActionPoints.get(i)) /*|| actionPoint.isUsedAtTheMoment()*/) {
+            if (actionPoint.isPlayerIn(this.players.get(i))) {
                 return true;
             }
         }
         return false;
     }
 
+    private boolean otherPlayerOnWayToActionPoint(final ActionPoint actionPoint, final int x) {
+        for (int i = 0; i < this.players.size(); i++) {
+            if (i == x) {
+                continue;
+            }
+            if (actionPoint.equals(this.goalActionPoints.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean otherPlayerOnWayToActionPointOrAlreadyThere(final ActionPoint actionPoint, final int x) {
+        for (int i = 0; i < this.players.size(); i++) {
+            if (i == x) {
+                continue;
+            }
+            if (actionPoint.equals(this.goalActionPoints.get(i)) || this.otherPlayerCurrentlyAtActionPoint(actionPoint, x)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     private ActionPoint getNextCustomer(final int i) {
         ActionPoint nextCustomer = null;
         for (final ActionPoint customer : this.customers) {
-            if ((!customer.wasVisited() && !this.otherPlayerOnWayToActionPointOrAlreadyThere(customer, i)) && (nextCustomer == null || nextCustomer.getWaitingTime() == -1 || customer.getWaitingTime() != -1 && customer.getWaitingTime() > nextCustomer.getWaitingTime())) {
+            if ((!customer.wasVisited() && !this.otherPlayerOnWayToActionPoint(customer, i)) && (nextCustomer == null || nextCustomer.getWaitingTime() == -1 || customer.getWaitingTime() != -1 && customer.getWaitingTime() > nextCustomer.getWaitingTime())) {
                 nextCustomer = customer;
             }
-        }
-        if (nextCustomer == null) {
-//            System.err.println("returning nextCustomer == null");
         }
         return nextCustomer;
     }
@@ -519,19 +493,11 @@ public class MyBot extends KitchenPlayerAI {
             this.first = null;
         }
 
-        public LinkedList(final Node first) {
-            this.first = first;
-        }
-
         public Node getFirst() {
             return this.first;
         }
 
-        public void setFirst(final Node first) {
-            this.first = first;
-        }
-
-        public void insert(final Object element) {
+        public void pushback(final Object element) {
             if (this.first == null) {
                 this.first = new Node(element, null);
             } else {
@@ -558,10 +524,6 @@ public class MyBot extends KitchenPlayerAI {
 
             public Object getData() {
                 return this.data;
-            }
-
-            public void setData(final Object data) {
-                this.data = data;
             }
 
             public void setNext(final Node next) {
