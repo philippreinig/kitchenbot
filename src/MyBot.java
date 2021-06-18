@@ -59,6 +59,7 @@ public class MyBot extends KitchenPlayerAI {
 
     @Override
     public void update(final KitchenInformation information, final List<Player> players) {
+        this.info = information;
         if (this.init) {
             for (int i = 0; i < players.size(); i++) {
                 this.goalActionPoints.add(null);
@@ -66,7 +67,6 @@ public class MyBot extends KitchenPlayerAI {
             }
             this.init = false;
         }
-        this.info = information;
         this.refactorActionPoints();
         this.players = players;
         for (int i = 0; i < players.size(); i++) {
@@ -88,7 +88,12 @@ public class MyBot extends KitchenPlayerAI {
             }
             //No customer without order exists or other player is already on his way there / already there -> idle
             else {
-                player.setAction(Action.idle());
+
+                if ((this.info.getMission().getNeededPoints() > 100000 || this.info.getMission().getNeededPoints() == -1.0) && this.info.getPoints() > 40000 && !this.otherPlayerOnWayToActionPointOrAlreadyThere(this.actionPoints.get(MyBot.UPGRADE), i)) {
+                    this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.UPGRADE), i);
+                } else {
+                    this.moveToActionPoint(player, this.customers.get(0), i);
+                }
             }
         }
         //player just got Cooking from customer, but its not yet added to currentCookings-list -> add to list now
@@ -116,7 +121,6 @@ public class MyBot extends KitchenPlayerAI {
                     this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.DISH_WASHING), i);
                 }
             } else if (status == CookingStatus.DISH || status == CookingStatus.RAW) {
-                // ================================================================================================================
                 boolean needToBuy = false;
                 // INGREDIENTS
 
@@ -126,7 +130,6 @@ public class MyBot extends KitchenPlayerAI {
                 } else if (MyBot.hasIncorrect(playersCurrentCooking.getIngredientsCorrect())) {
                     needToBuy = true;
                 } else {
-                    System.err.println("got to this position");
                     assert (!MyBot.hasIncorrect(playersCurrentCooking.getIngredientsCorrect()));
                 }
 
@@ -143,7 +146,6 @@ public class MyBot extends KitchenPlayerAI {
                 } else if (needToBuy && this.otherPlayerOnWayToActionPointOrAlreadyThere(this.actionPoints.get(MyBot.BUY), i)) {
                     // need new ingredients / spices, but other player is already on the way / there
                 }
-                // ================================================================================================================
             } else if (status == CookingStatus.READY_FOR_CUTTING) {
                 this.moveToActionPointAndUse(player, this.cuttingActionPoints.get(0), i);
             } else if (status == CookingStatus.READY_FOR_COOKING) {
@@ -151,8 +153,8 @@ public class MyBot extends KitchenPlayerAI {
                     this.currentCookings.set(i, new PlayersCooking(player.getCooking(), false));
                     this.moveToActionPointAndUse(player, this.cookingActionPoints.get(0), i);
                 } else {
-                    if (this.getCookingActionPointWithCooking(player, this.currentCookings.get(i).getCooking(), i) != null) {
-                        this.moveToActionPointAndUse(player, this.getCookingActionPointWithCooking(player, this.currentCookings.get(i).getCooking(), i), i);
+                    if (this.getCookingActionPointWithCooking(this.currentCookings.get(i).getCooking()) != null) {
+                        this.moveToActionPointAndUse(player, this.getCookingActionPointWithCooking(this.currentCookings.get(i).getCooking()), i);
                     }
                 }
                 this.currentCookings.get(i).setOnStove(true);
@@ -161,8 +163,8 @@ public class MyBot extends KitchenPlayerAI {
                 player.setAction(Action.idle());
             } else if (status == CookingStatus.SERVEABLE && player.getCooking() == null) {
                 assert (this.currentCookings.get(i).getOnStove()) : "cooking has to be onStove at this point, but isn't";
-                if (this.getCookingActionPointWithCooking(player, playersCurrentCooking, i) != null && !this.getCookingActionPointWithCooking(player, playersCurrentCooking, i).isPlayerIn(player)) {
-                    this.moveToActionPointAndUse(player, this.getCookingActionPointWithCooking(player, playersCurrentCooking, i), i);
+                if (this.getCookingActionPointWithCooking(playersCurrentCooking) != null && !this.getCookingActionPointWithCooking(playersCurrentCooking).isPlayerIn(player)) {
+                    this.moveToActionPointAndUse(player, this.getCookingActionPointWithCooking(playersCurrentCooking), i);
                 } else {
                     player.setAction(Action.use());
                 }
@@ -190,7 +192,7 @@ public class MyBot extends KitchenPlayerAI {
         return null;
     }
 
-    private ActionPoint getCookingActionPointWithCooking(final Player player, final Cooking cooking, final int i) {
+    private ActionPoint getCookingActionPointWithCooking(final Cooking cooking) {
         for (final ActionPoint ap : this.cookingActionPoints) {
             if (ap.getCooking() == cooking) {
                 return ap;
@@ -202,7 +204,6 @@ public class MyBot extends KitchenPlayerAI {
     private static List<KitchenIngredient> getMissingIngredients(final Cooking cooking) {
         final List<KitchenIngredient> ingredients = new ArrayList<>(cooking.getRecipe().getNeededIngredients());
         for (final KitchenIngredient ingredient : cooking.getIngredients()) {
-//            assert (ingredients.contains(ingredient)) : "cooking contains more ingredients than needed from recipe (fails for: " + ingredient + ")";
             ingredients.remove(ingredient);
         }
         return ingredients;
@@ -280,7 +281,7 @@ public class MyBot extends KitchenPlayerAI {
                     this.cookingActionPoints.add(actionpoint);
                     break;
                 default:
-                    throw new IllegalStateException(name + " not handled by refactorActionPoints() method!");
+                    assert (false) : name + " not handled by refactorActionPoints() method!";
             }
         }
         /*
@@ -296,13 +297,21 @@ public class MyBot extends KitchenPlayerAI {
             CUTTING
             COOKING
          */
+    }
 
+    private void moveToActionPoint(final Player player, final ActionPoint actionpoint, final int i) {
+        assert (actionpoint != null) : "move method got actionpoint, which is null!";
+        if (actionpoint.isPlayerIn(player)) {
+            player.setAction(Action.idle());
+        } else {
+            final PathResult wayFromTo = this.info.getWays().findWayFromTo(this.info, player, actionpoint.getPosition());
+            player.setAction(Action.move(wayFromTo.getMovement()));
+            this.goalActionPoints.set(i, actionpoint);
+        }
     }
 
     private void moveToActionPointAndUse(final Player player, final ActionPoint actionpoint, final int i) {
-        if (actionpoint == null) {
-            throw new IllegalStateException("move method got actionpoint, which is null!");
-        }
+        assert (actionpoint != null) : "move method got actionpoint, which is null!";
         if (actionpoint.isPlayerIn(player)) {
             player.setAction(Action.use());
         } else {
@@ -410,7 +419,7 @@ public class MyBot extends KitchenPlayerAI {
     private ActionPoint getNextCustomer(final int i) {
         ActionPoint nextCustomer = null;
         for (final ActionPoint customer : this.customers) {
-            if ((!customer.wasVisited() && !this.otherPlayerOnWayToActionPoint(customer, i)) && (nextCustomer == null || nextCustomer.getWaitingTime() == -1 || customer.getWaitingTime() != -1 && customer.getWaitingTime() > nextCustomer.getWaitingTime())) {
+            if ((!customer.wasVisited() && !this.otherPlayerOnWayToActionPoint(customer, i)) && ((nextCustomer == null && customer.getWaitingTime() != -1) || (nextCustomer != null && customer.getWaitingTime() != -1 && customer.getWaitingTime() > nextCustomer.getWaitingTime()))) {
                 nextCustomer = customer;
             }
         }
@@ -448,52 +457,6 @@ public class MyBot extends KitchenPlayerAI {
         @Override
         public String toString() {
             return this.cooking.getId() + ": " + this.cooking.getRecipe().getName() + ", " + this.cooking.getStatus() + ", " + this.onStove;
-        }
-    }
-
-    public static class LinkedList {
-        private Node first;
-
-        public LinkedList() {
-            this.first = null;
-        }
-
-        public Node getFirst() {
-            return this.first;
-        }
-
-        public void pushback(final Object element) {
-            if (this.first == null) {
-                this.first = new Node(element, null);
-            } else {
-                Node node = this.first;
-                while (node.next != null) {
-                    node = node.getNext();
-                }
-                node.setNext(new Node(element, null));
-            }
-        }
-
-        private static class Node {
-            Object data;
-            Node next;
-
-            Node(final Object data, final Node next) {
-                this.data = data;
-                this.next = next;
-            }
-
-            public Node getNext() {
-                return this.next;
-            }
-
-            public Object getData() {
-                return this.data;
-            }
-
-            public void setNext(final Node next) {
-                this.next = next;
-            }
         }
     }
 }
