@@ -10,7 +10,6 @@ import com.apogames.kitchenchef.game.enums.*;
 import com.apogames.kitchenchef.game.pathfinding.PathResult;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,18 +65,6 @@ public class MyBot extends KitchenPlayerAI {
                 this.currentCookings.add(null);
             }
             this.init = false;
-            if (MyBot.DEBUG) {
-                for (final ActionPoint ap : information.getActionPoints()) {
-//                    System.out.println(ap.getPosition() + ", " + ap.getContent().name() + ", " + ap.getId());
-                    if (ap.getContent() == KitchenActionPointEnum.UPGRADE) {
-                        final List<KitchenUpgrade> upgrades = ap.getPossibleUpgrades();
-//                        System.out.println("possible upgrades: " + Arrays.toString(ap.getPossibleUpgrades().toArray()));
-                        for (final KitchenUpgrade upgrade : upgrades) {
-//                            System.out.println(upgrade.getValueString() + ": " + upgrade.getCost());
-                        }
-                    }
-                }
-            }
         }
         this.info = information;
         this.refactorActionPoints();
@@ -132,19 +119,14 @@ public class MyBot extends KitchenPlayerAI {
                 // ================================================================================================================
                 boolean needToBuy = false;
                 // INGREDIENTS
-                System.out.println("INGREDIENTS");
+
                 final ActionPoint firstIngredientTakingActionPointWhichContainsAtLeastOneNeededIngredient = this.getFirstIngredientTakingActionPointWhichContainsAtLeastOneNeededIngredient(playersCurrentCooking);
-                System.out.println("firstIngredientTakingActionPointWhichContainsAtLeastOneNeededIngredient: " + (firstIngredientTakingActionPointWhichContainsAtLeastOneNeededIngredient != null ? firstIngredientTakingActionPointWhichContainsAtLeastOneNeededIngredient.getId() : "null"));
                 if (firstIngredientTakingActionPointWhichContainsAtLeastOneNeededIngredient != null) {
-                    System.out.println("still  got ingredients, dont need to buy");
                     this.moveToActionPointAndUse(player, firstIngredientTakingActionPointWhichContainsAtLeastOneNeededIngredient, i);
-                    System.out.println("moved player to action point with missing ingredients");
                 } else if (MyBot.hasIncorrect(playersCurrentCooking.getIngredientsCorrect())) {
-                    System.out.println("no action point with needed ingredients and ingredients missing -> need to buy");
                     needToBuy = true;
                 } else {
-                    assert (false);
-                    System.out.println("all ingredients correct");
+                    System.err.println("got to this position");
                     assert (!MyBot.hasIncorrect(playersCurrentCooking.getIngredientsCorrect()));
                 }
 
@@ -157,10 +139,9 @@ public class MyBot extends KitchenPlayerAI {
                     assert (!MyBot.hasIncorrect(playersCurrentCooking.getSpiceCorrect()));
                 }
                 if (needToBuy && !this.otherPlayerOnWayToActionPointOrAlreadyThere(this.actionPoints.get(MyBot.BUY), i)) {
-                    System.out.println("need to buy new ingredients and no other player on their way / there -> moving there now");
                     this.moveToActionPointAndUse(player, this.actionPoints.get(MyBot.BUY), i);
                 } else if (needToBuy && this.otherPlayerOnWayToActionPointOrAlreadyThere(this.actionPoints.get(MyBot.BUY), i)) {
-                    System.err.println("need new ingredients, but other player is already on the way to buy ");
+                    // need new ingredients / spices, but other player is already on the way / there
                 }
                 // ================================================================================================================
             } else if (status == CookingStatus.READY_FOR_CUTTING) {
@@ -219,29 +200,22 @@ public class MyBot extends KitchenPlayerAI {
     }
 
     private static List<KitchenIngredient> getMissingIngredients(final Cooking cooking) {
-        System.out.println("getMessingIngredients: neededIngredients: " + cooking.getRecipe().getNeededIngredients() + ", current ingredients: " + cooking.getIngredients());
         final List<KitchenIngredient> ingredients = new ArrayList<>(cooking.getRecipe().getNeededIngredients());
         for (final KitchenIngredient ingredient : cooking.getIngredients()) {
 //            assert (ingredients.contains(ingredient)) : "cooking contains more ingredients than needed from recipe (fails for: " + ingredient + ")";
             ingredients.remove(ingredient);
         }
-        System.out.println("getMissingIngredients: needed ingredients: " + Arrays.toString(ingredients.toArray()));
         return ingredients;
     }
 
     private boolean ingredientTakingActionPointContainsAtLeastOneMissingIngredient(final ActionPoint ingredientTakingActionPoint, final Cooking cooking) {
         final List<KitchenIngredient> availableIngredients = this.info.getSameActionPoint(ingredientTakingActionPoint).getIngredients();
         final List<KitchenIngredient> neededIngredients = MyBot.getMissingIngredients(cooking);
-        System.out.println("ingredientTakingActionPointContainsAtLeastOneMissingIngredient: availableIngredients at " + ingredientTakingActionPoint.getId() + ": " + Arrays.toString(availableIngredients.toArray()));
-        System.out.println("ingredientTakingActionPointContainsAtLeastOneMissingIngredient: neededIngredients at " + ingredientTakingActionPoint.getId() + ": " + Arrays.toString(neededIngredients.toArray()));
-
         for (final KitchenIngredient ingredient : neededIngredients) {
             if (MyBot.kitchenIngredientContainedInKitchenIngredientList(availableIngredients, ingredient)) {
-                System.out.println("ingredientTakingActionPointContainsAtLeastOneMissingIngredient: " + ingredient.name() + " is available and needed -> return true");
                 return true;
             }
         }
-        System.out.println("ingredientTakingActionPointContainsAtLeastOneMissingIngredient: ingredient taking action point " + ingredientTakingActionPoint.getId() + " does not have any needed ingredients");
         return false;
     }
 
